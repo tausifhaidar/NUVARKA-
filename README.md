@@ -12,7 +12,7 @@ Open-source starter for turning a permitted video source into short vertical cli
 ## Important limitations
 - This is a starter backend, not a hosted public website or always-on API.
 - GitHub is used for source code and GitHub Actions automation. Actions is temporary CI compute, not a permanent video server; long videos may exceed runner time, storage, or memory limits.
-- The initial crop is centered. Face-aware tracking, speaker diarization, and advanced semantic highlight ranking are not implemented yet.
+- Landscape clips use lightweight OpenCV face detection to place the largest detected face near the center of a 9:16 crop. This is sampled face-guided framing, not continuous frame-by-frame tracking or identity recognition. If no face is found, the full-frame blurred-background layout is used. Speaker diarization and advanced semantic highlight ranking are not implemented yet.
 - No paid AI API key is required. Whisper model files are downloaded on first use; choose a smaller model for CPU/low-memory runs.
 
 ## Run locally

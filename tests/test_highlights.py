@@ -10,3 +10,9 @@ def test_selects_valid_window():
     result = choose_segments(transcript, 55, 2)
     assert result
     assert all(0 <= start < end <= 55 for start, end in result)
+
+from app.media import detect_face_center
+
+
+def test_face_detection_returns_none_for_missing_video():
+    assert detect_face_center(__import__("pathlib").Path("missing-video.mp4")) is None
