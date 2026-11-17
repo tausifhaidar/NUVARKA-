@@ -1,0 +1,52 @@
+name: Manual clip demo
+on:
+  workflow_dispatch:
+    inputs:
+      video_url:
+        description: Direct video URL you own or have permission to process
+        required: true
+        type: string
+      clips:
+        description: Number of clips (1-5)
+        required: true
+        default: "3"
+        type: string
+jobs:
+  clip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Download authorized source video
+        env:
+          VIDEO_URL: ${{ inputs.video_url }}
+        run: |
+          mkdir -p uploads
+          yt-dlp --no-playlist -f "best[height<=720]" -o "uploads/source.%(ext)s" "$VIDEO_URL"
+      - name: Run clipping pipeline
+        env:
+          WHISPER_MODEL: tiny
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from app.pipeline import process_video
+          files = list(Path("uploads").glob("source.*"))
+          if not files:
+              raise SystemExit("No input video downloaded")
+          outputs = process_video(files[0], int("${{ inputs.clips }}"))
+          print("\n".join(outputs))
+          PY
+      - name: Upload clips
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-clipping-results
+          path: outputs/**/*.mp4
+          if-no-files-found: error
+          retention-days: 3
