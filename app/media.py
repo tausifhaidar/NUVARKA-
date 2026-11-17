@@ -59,7 +59,7 @@ def detect_face_center(path: Path) -> float | None:
     cascade_path = Path(cv2.data.haarcascades) / "haarcascade_frontalface_default.xml"
     detector = cv2.CascadeClassifier(str(cascade_path))
     centers = []
-    for second in np.linspace(0, max(0, duration - 0.1), num=min(24, max(1, int(duration) + 1)):
+    for second in np.linspace(0, max(0, duration - 0.1), num=min(24, max(1, int(duration) + 1))):
         capture.set(cv2.CAP_PROP_POS_MSEC, float(second) * 1000)
         ok, frame = capture.read()
         if not ok:
